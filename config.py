@@ -15,7 +15,7 @@ OWNER_ID = int(getenv("OWNER_ID", "5968801459"))
 OWNER_USERNAME = getenv("OWNER_USERNAME", "Dhairya_bh")
 BOT_USERNAME = getenv("BOT_USERNAME", "Dhairya_music_2bot")
 BOT_NAME = getenv("BOT_NAME", "˹𝑫𝒉𝒂𝒊𝒓𝒚𝒂 𝑿 𝑴𝒖𝒔𝒊𝒄 2˼ ♪")
-ASSUSERNAME = getenv("ASSUSERNAME", "musicxannie")
+ASSUSERNAME = getenv("ASSUSERNAME", "Pwfreebatches_bot")
 
 # ── Database & logging ─────────────────────────────────────────────────────────
 MONGO_DB_URI = getenv("MONGO_DB_URI")
@@ -45,8 +45,8 @@ UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "Master")
 GIT_TOKEN = getenv("GIT_TOKEN")  # needed if repo is private
 
 # ── Support links ──────────────────────────────────────────────────────────────
-SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/CertifiedNetwork")
-SUPPORT_CHAT = getenv("SUPPORT_CHAT", "https://t.me/CertifiedDiscussion")
+SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/DhairyaXmusic2")
+SUPPORT_CHAT = getenv("SUPPORT_CHAT", "https://t.me/Dhairya_Music")
 
 # ── Assistant auto-leave ───────────────────────────────────────────────────────
 AUTO_LEAVING_ASSISTANT = False
