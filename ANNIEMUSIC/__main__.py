@@ -17,11 +17,11 @@ from config import BANNED_USERS
 
 async def start_port_listener():
     """
-    Simple aiohttp server that listens on the port Render provides (or 8000 fallback).
+    Simple aiohttp server that listens on the port Render provides (or 8080 fallback).
     Keeps the process bound to a port so hosting platforms like Render consider it healthy.
     """
     # Use os.getenv and a direct fallback for clarity
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 8080))
     async def handle(request):
         # A simple response for the health check
         return web.Response(text="ANNIEMUSIC is running.")
