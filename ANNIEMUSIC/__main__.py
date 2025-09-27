@@ -20,8 +20,10 @@ async def start_port_listener():
     Simple aiohttp server that listens on the port Render provides (or 8000 fallback).
     Keeps the process bound to a port so hosting platforms like Render consider it healthy.
     """
-    port = int(os.environ.get("PORT", "8000"))
+    # Use os.getenv and a direct fallback for clarity
+    port = int(os.environ.get("PORT", 8000))
     async def handle(request):
+        # A simple response for the health check
         return web.Response(text="ANNIEMUSIC is running.")
 
     srv_app = web.Application()
@@ -30,11 +32,20 @@ async def start_port_listener():
     runner = web.AppRunner(srv_app)
     await runner.setup()
     site = web.TCPSite(runner, "0.0.0.0", port)
+    
+    # Start the site. Render's health check will pass once this is executed.
     await site.start()
     LOGGER("ANNIEMUSIC").info(f"Port listener started on 0.0.0.0:{port}")
 
 
 async def init():
+    
+    try:
+        await start_port_listener()
+    except Exception as e:
+        LOGGER("ANNIEMUSIC").warning(f"Could not start port listener: {e}")
+    # --------------------------------------------------------------------------
+
     if (
         not config.STRING1
         and not config.STRING2
@@ -73,13 +84,7 @@ async def init():
 
     await userbot.start()
     await JARVIS.start()
-
-    # Start the fake port listener (non-blocking)
-    try:
-        asyncio.create_task(start_port_listener())
-    except Exception as e:
-        LOGGER("ANNIEMUSIC").warning(f"Could not start port listener: {e}")
-
+    
     try:
         await JARVIS.stream_call("http://docs.evostream.com/sample_content/assets/sintel1m720p.mp4")
     except NoActiveGroupCall:
@@ -101,4 +106,5 @@ async def init():
 
 
 if __name__ == "__main__":
+    # Ensure the main asyncio loop runs the init function
     asyncio.get_event_loop().run_until_complete(init())
