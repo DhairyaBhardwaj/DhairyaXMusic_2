@@ -1,9 +1,9 @@
 import asyncio
 import importlib
 import os
+import threading
 from pyrogram import idle
 from pytgcalls.exceptions import NoActiveGroupCall
-from aiohttp import web
 
 import config
 from ANNIEMUSIC import LOGGER, app, userbot
@@ -13,39 +13,10 @@ from ANNIEMUSIC.plugins import ALL_MODULES
 from ANNIEMUSIC.utils.database import get_banned_users, get_gbanned
 from ANNIEMUSIC.utils.cookie_handler import fetch_and_store_cookies
 from config import BANNED_USERS
-
-
-async def start_port_listener():
-    """
-    Simple aiohttp server that listens on the port Render provides (or 8080 fallback).
-    Keeps the process bound to a port so hosting platforms like Render consider it healthy.
-    """
-    # Use os.getenv and a direct fallback for clarity
-    port = int(os.environ.get("PORT", 8080))
-    async def handle(request):
-        # A simple response for the health check
-        return web.Response(text="ANNIEMUSIC is running.")
-
-    srv_app = web.Application()
-    srv_app.router.add_get("/", handle)
-
-    runner = web.AppRunner(srv_app)
-    await runner.setup()
-    site = web.TCPSite(runner, "0.0.0.0", port)
-    
-    # Start the site. Render's health check will pass once this is executed.
-    await site.start()
-    LOGGER("ANNIEMUSIC").info(f"Port listener started on 0.0.0.0:{port}")
+from route import run_flask   
 
 
 async def init():
-    
-    try:
-        await start_port_listener()
-    except Exception as e:
-        LOGGER("ANNIEMUSIC").warning(f"Could not start port listener: {e}")
-    # --------------------------------------------------------------------------
-
     if (
         not config.STRING1
         and not config.STRING2
@@ -53,8 +24,13 @@ async def init():
         and not config.STRING4
         and not config.STRING5
     ):
-        LOGGER(__name__).error("ᴀssɪsᴛᴀɴᴛ sᴇssɪᴏɴ ɴᴏᴛ ғɪʟʟᴇᴅ, ᴘʟᴇᴀsᴇ ғɪʟʟ ᴀ ᴘʏʀᴏɢʀᴀᴍ sᴇssɪᴏɴ...")
+        LOGGER(__name__).error(
+            "ᴀssɪsᴛᴀɴᴛ sᴇssɪᴏɴ ɴᴏᴛ ғɪʟʟᴇᴅ, ᴘʟᴇᴀsᴇ ғɪʟʟ ᴀ ᴘʏʀᴏɢʀᴀᴍ sᴇssɪᴏɴ..."
+        )
         exit()
+
+
+    threading.Thread(target=run_flask, daemon=True).start()
 
     # ✅ Try to fetch cookies at startup
     try:
@@ -62,7 +38,6 @@ async def init():
         LOGGER("ANNIEMUSIC").info("ʏᴏᴜᴛᴜʙᴇ ᴄᴏᴏᴋɪᴇs ʟᴏᴀᴅᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ ✅")
     except Exception as e:
         LOGGER("ANNIEMUSIC").warning(f"⚠️ᴄᴏᴏᴋɪᴇ ᴇʀʀᴏʀ: {e}")
-
 
     await sudo()
 
@@ -84,7 +59,7 @@ async def init():
 
     await userbot.start()
     await JARVIS.start()
-    
+
     try:
         await JARVIS.stream_call("http://docs.evostream.com/sample_content/assets/sintel1m720p.mp4")
     except NoActiveGroupCall:
@@ -106,5 +81,4 @@ async def init():
 
 
 if __name__ == "__main__":
-    # Ensure the main asyncio loop runs the init function
     asyncio.get_event_loop().run_until_complete(init())
